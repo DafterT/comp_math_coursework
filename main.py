@@ -11,7 +11,7 @@ def get_x():
     """
     # Начальное приближение
     x = 2
-    eps = 1e-7
+    eps = 1e-9
 
     # Функция, у которой ищем ноль
     def F(x):
@@ -31,7 +31,7 @@ def get_E():
     def F(x):
         return np.sin(x) / (x ** 2 + 1)
 
-    return 1.553791 * scipy.integrate.quad(F, start, end, )[0]
+    return 1.553791 * scipy.integrate.quad(F, start, end)[0]
 
 
 def get_Mathieu_function(delt, E):
@@ -51,7 +51,7 @@ def get_Mathieu_function(delt, E):
 def rkf853(f, T, X0):
     """
     Решает `x' = f(t, x)` для каждого `t` в `T`
-    С начальным значением `X0`, используя явный метод Рунге-Кутта 8 5 3
+    С начальным значением `X0`, используя явный метод Рунге-Кутта 8
     """
     runge = scipy.integrate.ode(f).set_integrator('dop853').set_initial_value(X0, T[0])
     X = [X0, *[runge.integrate(T[i]) for i in range(1, len(T))]]
@@ -131,8 +131,8 @@ def main():
     print(pt)
     print(f'Max error = {max(Runge_rule)}')
     # Оценка влияния погрешности исходных данных
-    error = []
     error_add = np.array([10 ** (-i) for i in range(6, 0, -1)])
+    error = []
     for i in error_add:
         error.append(calculate(points, i))
     # Вывод значений
