@@ -2,7 +2,7 @@ import random
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy
-import prettytable as pt
+from prettytable import PrettyTable
 
 
 def get_x():
@@ -79,6 +79,7 @@ def calculate(points, error):
     # Вывели результат в виде графика
     plt.title(f'Error = {error}')
     plt.plot(points, Mathieu, '-o')
+    plt.savefig(f'graphs/error_{error}.png')
     plt.show()
     return Mathieu
 
@@ -115,14 +116,45 @@ def main():
     plt.plot(points, without_error, '-o', color='g', label='Step 0.5')
     plt.plot(doubled_points, without_error_doubled_points, '-o', color='b', label='Step 0.25', alpha=0.3)
     plt.legend()
+    plt.savefig('graphs/graphs_without_error.png')
     plt.show()
     # Оценка точности
-    plt.plot(points, without_error - without_error_doubled_points[::2], '-o')
+    Runge_rule = abs(without_error - without_error_doubled_points[::2]) / (2 ** 8 - 1)
+    plt.plot(points, Runge_rule, '-o')
+    plt.savefig('graphs/error_of_method.png')
     plt.show()
+    pt = PrettyTable()
+    pt.add_column('X', points)
+    pt.add_column('Without Error', without_error)
+    pt.add_column('Without Error Doubled', without_error_doubled_points[::2])
+    pt.add_column('Runge Rule', Runge_rule)
+    print(pt)
+    print(f'Max error = {max(Runge_rule)}')
     # Оценка влияния погрешности исходных данных
     error = []
-    for i in range(6, 0, -1):
-        error.append(calculate(points, 10 ** (-i)))
+    error_add = np.array([10 ** (-i) for i in range(6, 0, -1)])
+    for i in error_add:
+        error.append(calculate(points, i))
+    # Вывод значений
+    pt = PrettyTable()
+    pt.add_column('X', points)
+    pt.add_column('0', [f'{i:.07}' for i in without_error])
+    for error_val, result in zip(error_add, error):
+        pt.add_column(f'{error_val:.0e}', [f'{i:.07}' for i in result])
+    print(pt)
+    # Вывод погрешностей
+    max_delta = []
+    pt = PrettyTable()
+    pt.add_column('X', points)
+    for error_val, result in zip(error_add, error):
+        max_delta.append(max(without_error - result))
+        pt.add_column(f'{error_val:.0e}', [f'{i:.05e}' for i in without_error - result])
+    print(pt)
+    # Вывод максимальных погрешностей
+    pt = PrettyTable()
+    pt.add_column('Error val', [f'{i:.0e}' for i in error_add])
+    pt.add_column('Max Error', [f'{i:.5e}' for i in max_delta])
+    print(pt)
 
 
 if __name__ == "__main__":
