@@ -1,8 +1,8 @@
 import random
-
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy
+import prettytable as pt
 
 
 def get_x():
@@ -59,6 +59,9 @@ def rkf853(f, T, X0):
 
 
 def calculate(points, error):
+    """
+    Вычисляет функцию Матьё с заданной погрешностью
+    """
     # Вычисляем А на основании x*
     A = 0.5300355 * get_x() + error * random.choice([-1, 1])
     # B задано
@@ -80,9 +83,44 @@ def calculate(points, error):
     return Mathieu
 
 
+def calculate_without_error(points):
+    """
+    Вычисляет функцию Матьё
+    """
+    # Вычисляем А на основании x*
+    A = 0.5300355 * get_x()
+    # B задано
+    B = 0
+    # Дельта задано
+    delt = 1
+    # Получим E
+    E = get_E()
+    # Получим функцию Матьё
+    Mathieu_function = get_Mathieu_function(delt, E)
+    # Зададим начальные значения
+    X0 = np.array([A, B])
+    # Получим результат вычисления
+    Mathieu = rkf853(Mathieu_function, points, X0)[0]
+    return Mathieu
+
+
 def main():
+    # Получение решения
     points = np.arange(0, 10.5, 0.5)
-    error = [calculate(points, 0)]
+    without_error = calculate_without_error(points)
+    # Получение решения с двойной точностью
+    doubled_points = np.arange(0, 10.25, 0.25)
+    without_error_doubled_points = calculate_without_error(doubled_points)
+    # Вывод на график
+    plt.plot(points, without_error, '-o', color='g', label='Step 0.5')
+    plt.plot(doubled_points, without_error_doubled_points, '-o', color='b', label='Step 0.25', alpha=0.3)
+    plt.legend()
+    plt.show()
+    # Оценка точности
+    plt.plot(points, without_error - without_error_doubled_points[::2], '-o')
+    plt.show()
+    # Оценка влияния погрешности исходных данных
+    error = []
     for i in range(6, 0, -1):
         error.append(calculate(points, 10 ** (-i)))
 
