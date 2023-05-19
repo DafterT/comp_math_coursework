@@ -1,3 +1,5 @@
+import random
+
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy
@@ -33,6 +35,10 @@ def get_E():
 
 
 def get_Mathieu_function(delt, E):
+    """
+    Возвращает функцию Метьё
+    """
+
     def F(t, X):
         dX = np.zeros(X.shape)
         dX[1] = X[0]
@@ -52,26 +58,33 @@ def rkf853(f, T, X0):
     return np.array([i[0] for i in X]), np.array([i[1] for i in X])
 
 
-def main():
+def calculate(points, error):
     # Вычисляем А на основании x*
-    A = 0.5300355 * get_x()
+    A = 0.5300355 * get_x() + error * random.choice([-1, 1])
     # B задано
-    B = 0
+    B = 0 + error * random.choice([-1, 1])
     # Дельта задано
-    delt = 1
+    delt = 1 + error * random.choice([-1, 1])
     # Получим E
-    E = get_E()
+    E = get_E() + error * random.choice([-1, 1])
     # Получим функцию Матьё
     Mathieu_function = get_Mathieu_function(delt, E)
     # Зададим начальные значения
     X0 = np.array([A, B])
-    # Создадим точки для подсчета
-    points = np.arange(0, 10.5, 0.5)
     # Получим результат вычисления
     Mathieu = rkf853(Mathieu_function, points, X0)[0]
-    plt.plot(points, Mathieu)
+    # Вывели результат в виде графика
+    plt.title(f'Error = {error}')
+    plt.plot(points, Mathieu, '-o')
     plt.show()
-    print(Mathieu)
+    return Mathieu
+
+
+def main():
+    points = np.arange(0, 10.5, 0.5)
+    error = [calculate(points, 0)]
+    for i in range(6, 0, -1):
+        error.append(calculate(points, 10 ** (-i)))
 
 
 if __name__ == "__main__":
