@@ -2,7 +2,7 @@
 ## Задача
 Вариант К-3-21. Уравнение Матьё  
 Дано уравнение Матьё вида:  
-<img src="https://latex.codecogs.com/svg.image?&space;\begin{cases}&space;&&space;\frac{\mathrm{d}^2U&space;}{\mathrm{d}&space;t^2}&space;&plus;&space;(\delta&space;&plus;&space;E\cdot&space;cos(2t))U=0\\&space;&&space;U(0)=A&space;\\&space;&&space;U'(0)=B\end{cases}" />  
+<img src="https://latex.codecogs.com/svg.image?&space;\begin{cases}&space;&&space;\frac{\mathrm{d}^2U&space;}{\mathrm{d}&space;t^2}&space;&plus;&space;(\delta&space;&plus;&space;E\cdot&space;cos(2t))U=0\\&space;&&space;U(0)=A&space;\\&space;&&space;U'(0)=B\end{cases}"/>  
 Где коэффициенты имеют следующие значения:  
 * <img src="https://latex.codecogs.com/svg.image?A=0.5300355\cdot&space;x^{\circ}" />, где  <img src="https://latex.codecogs.com/svg.image?x^{\circ}" /> наименьший корень уравнения <img src="https://latex.codecogs.com/svg.image?x=1.4^x" />
 * <img src="https://latex.codecogs.com/svg.image?B=0" />
@@ -84,6 +84,7 @@ def rkf853(f, T, X0):
     X = [X0, *[runge.integrate(T[i]) for i in range(1, len(T))]]
     return np.array([i[0] for i in X]), np.array([i[1] for i in X])
 ```
+___
 ## Подсчет точности
 Для подсчета точности будем использовать Метод Рунге. Для него необходимо найти 2 решения с разным шагом, создадим для этого функцию, которая будет принимать на вход точки, в которых необходимо искать решение:
 ```Python
@@ -136,6 +137,7 @@ def main():
     print(f'Max error = {max(Runge_rule)}')
 ```
 Полученные результаты можно найти в отчете.
+___
 ## Оценка устойчивости
 Для оценки устойчивости будем случайным образом в N-й знак входных данных добавлять единицу и смотреть что получится.  
 Для этого изменим функцию подсчета, а так же сразу же в неё перенесем вывод графиков:
@@ -193,7 +195,8 @@ def calculate(points, error):
     return Mathieu
 ```
 Полученные результаты так же можно найти в отчете.
-# Содержимое файлов
+___
+## Содержимое файлов
 * **_main.py_** - весть код проекта
 * _**graphs**_ - все графики проекта
 * **_report_** - отчет в формате docx и pdf
